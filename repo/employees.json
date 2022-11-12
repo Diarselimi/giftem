@@ -1,0 +1,65 @@
+[{
+  "id": 1,
+  "name": "severin",
+  "interests": ["high end audio", "photography", "sitting comfortably"]
+}, {
+  "id": 2,
+  "name": "oliver",
+  "interests": ["pets", "scifi", "music making"]
+}, {
+  "id": 3,
+  "name": "henry",
+  "interests": ["scifi", "music", "drinking", "motorcross"]
+}, {
+  "id": 4,
+  "name": "karsten",
+  "interests": ["family", "reading"]
+}, {
+  "id": 5,
+  "name": "mehmet",
+  "interests": ["eating", "sleeping", "power lifting"]
+}, {
+  "id": 6,
+  "name": "jan",
+  "interests": ["triathlons", "techno", "family"]
+}, {
+  "id": 7,
+  "name": "alex",
+  "interests": ["drinking", "football", "camping"]
+}, {
+  "id": 8,
+  "name": "sarah",
+  "interests": ["meditation", "crossfit", "yoga"]
+}, {
+  "id": 9,
+  "name": "daniel",
+  "interests": ["handball", "pets"]
+}, {
+  "id": 10,
+  "name": "werner",
+  "interests": ["techno", "music making"]
+}, {
+  "id": 11,
+  "name": "robert",
+  "interests": ["photography", "eating"]
+}, {
+  "id": 12,
+  "name": "daniel",
+  "interests": ["pets"]
+}, {
+  "id": 13,
+  "name": "jonathan",
+  "interests": ["football", "drinking", "cocktails", "running"]
+}, {
+  "id": 14,
+  "name": "maxim",
+  "interests": ["scuba", "motorcross", "warhammer"]
+}, {
+  "id": 15,
+  "name": "michel",
+  "interests": ["motorcross", "family", "warhammer"]
+}, {
+  "id": 16,
+  "name": "marc",
+  "interests": ["skydiving", "reading", "family"]
+}]
