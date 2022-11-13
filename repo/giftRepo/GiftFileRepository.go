@@ -6,10 +6,20 @@ import (
 	"fmt"
 	"giftem/entity"
 	"os"
+	"sync"
 )
 
-func FindOneByCategories(categories []string) (entity.Gift, error) {
-	for _, gift := range getGifts() {
+type GiftsData struct {
+	mu    sync.Mutex
+	gifts []entity.Gift
+}
+
+func (gd *GiftsData) FindOneByCategories(categories []string) (entity.Gift, error) {
+	gd.mu.Lock()
+	defer gd.mu.Unlock()
+
+	fmt.Println(len(gd.gifts))
+	for _, gift := range gd.gifts {
 		if gift.HasCategories(categories) == true {
 			return gift, nil
 		}
@@ -17,26 +27,58 @@ func FindOneByCategories(categories []string) (entity.Gift, error) {
 	return entity.Gift{}, errors.New("No gift found")
 }
 
-func FindLast() entity.Gift {
-	gifts := getGifts()
-
-	return gifts[len(gifts)-1]
+func (gd *GiftsData) FindLast() entity.Gift {
+	gd.mu.Lock()
+	defer gd.mu.Unlock()
+	return gd.gifts[len(gd.gifts)-1]
 }
 
-func getGifts() []entity.Gift {
+func (gd *GiftsData) RemoveGift(giftName string) {
+	gd.mu.Lock()
+	defer gd.mu.Unlock()
+	for key, gift := range gd.gifts {
+		if gift.Name == giftName {
+			gd.gifts = append(gd.gifts[:key], gd.gifts[key+1:]...)
+			//fmt.Println(gd.gifts)
+			return
+		}
+	}
+	fmt.Println(gd.gifts)
+}
+
+func (gd *GiftsData) PersistData() {
+	jsonData, err := json.Marshal(gd.gifts)
+	if err != nil {
+		fmt.Println("Error while saving")
+	}
+
+	err = os.WriteFile("repo/gifts.json", jsonData, 0666)
+	if err != nil {
+		fmt.Println("Error while writing file")
+	}
+}
+
+func (gd *GiftsData) LoadGifts() {
+
+	fmt.Println(len(gd.gifts))
+	if len(gd.gifts) > 0 {
+		return
+	}
+
+	fmt.Println("reading-from-file")
 	content, err := os.ReadFile("repo/gifts.json")
 	if err != nil {
 		fmt.Println("Could not load")
 	}
 
-	return prepareData(content)
+	gd.prepareData(content)
 }
 
-func prepareData(content []byte) []entity.Gift {
-	var gifts []entity.Gift
-	err := json.Unmarshal(content, &gifts)
+func (gd *GiftsData) prepareData(content []byte) {
+	var gg []entity.Gift
+	err := json.Unmarshal(content, &gg)
 	if err != nil {
 		fmt.Println("Decoding failed")
 	}
-	return gifts
+	gd.gifts = gg
 }

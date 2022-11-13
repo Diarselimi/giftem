@@ -7,18 +7,28 @@ import (
 	"giftem/repo/giftRepo"
 )
 
-func Execute(employeeId int) (entity.Gift, error) {
+type AssignGiftToEmployeeCommand struct {
+	giftRepo giftRepo.GiftsData
+}
+
+func NewAssignGiftToEmployeeCommand() *AssignGiftToEmployeeCommand {
+	return &AssignGiftToEmployeeCommand{}
+}
+
+func (c *AssignGiftToEmployeeCommand) Execute(employeeId int) (entity.Gift, error) {
 	employee, err := employeeRepo.FindById(employeeId)
 	if err != nil {
 		errors.New("Employee not found.")
 	}
+	c.giftRepo.LoadGifts() // how we could prevent this call?
 
-	foundGift, err := giftRepo.FindOneByCategories(employee.Interests)
+	foundGift, err := c.giftRepo.FindOneByCategories(employee.Interests)
 	if err != nil {
-		foundGift = giftRepo.FindLast()
+		foundGift = c.giftRepo.FindLast()
 	}
 
-	//giftRepo.removeGift(foundGift) // removes it from repo
+	c.giftRepo.RemoveGift(foundGift.Name)
+	c.giftRepo.PersistData()
 
 	return foundGift, nil
 }

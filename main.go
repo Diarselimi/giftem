@@ -15,8 +15,8 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Employee with id %s not found", r.URL.Path[1:])
 		return
 	}
-
-	gift, err := command.Execute(employeeId)
+	cmd := command.NewAssignGiftToEmployeeCommand()
+	gift, err := cmd.Execute(employeeId)
 	if err != nil {
 		fmt.Fprintf(w, "We could not find a gift for you.")
 	}
