@@ -27,7 +27,7 @@ func (c *AssignGiftToEmployeeCommand) Execute(employeeId int) (entity.Gift, erro
 		foundGift = c.giftRepo.FindLast()
 	}
 
-	c.giftRepo.RemoveGift(foundGift.Name)
+	c.giftRepo.TakeGift(foundGift.Name)
 	c.giftRepo.PersistData()
 
 	return foundGift, nil

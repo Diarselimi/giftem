@@ -18,9 +18,8 @@ func (gd *GiftsData) FindOneByCategories(categories []string) (entity.Gift, erro
 	gd.mu.Lock()
 	defer gd.mu.Unlock()
 
-	fmt.Println(len(gd.gifts))
 	for _, gift := range gd.gifts {
-		if gift.HasCategories(categories) == true {
+		if gift.IsGifted == false && gift.HasCategories(categories) == true {
 			return gift, nil
 		}
 	}
@@ -30,16 +29,20 @@ func (gd *GiftsData) FindOneByCategories(categories []string) (entity.Gift, erro
 func (gd *GiftsData) FindLast() entity.Gift {
 	gd.mu.Lock()
 	defer gd.mu.Unlock()
-	return gd.gifts[len(gd.gifts)-1]
+	for _, gift := range gd.gifts {
+		if gift.IsGifted == false {
+			return gift
+		}
+	}
+	return entity.Gift{}
 }
 
-func (gd *GiftsData) RemoveGift(giftName string) {
+func (gd *GiftsData) TakeGift(giftName string) {
 	gd.mu.Lock()
 	defer gd.mu.Unlock()
 	for key, gift := range gd.gifts {
 		if gift.Name == giftName {
-			gd.gifts = append(gd.gifts[:key], gd.gifts[key+1:]...)
-			//fmt.Println(gd.gifts)
+			gd.gifts[key].IsGifted = true
 			return
 		}
 	}
@@ -65,7 +68,6 @@ func (gd *GiftsData) LoadGifts() {
 		return
 	}
 
-	fmt.Println("reading-from-file")
 	content, err := os.ReadFile("repo/gifts.json")
 	if err != nil {
 		fmt.Println("Could not load")

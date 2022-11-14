@@ -5,6 +5,7 @@ import "sync"
 type Gift struct {
 	Name       string   `json:"name"`
 	Categories []string `json:"categories"`
+	IsGifted   bool     `json:"is_gifted"`
 }
 
 type Gifts struct {
