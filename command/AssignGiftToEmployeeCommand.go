@@ -5,12 +5,10 @@ import (
 	"fmt"
 	"giftem/repo/employeeRepo"
 	"giftem/repo/giftRepo"
-	"sync"
 	"time"
 )
 
 type AssignGiftToEmployeeCommand struct {
-	mu         sync.Mutex
 	giftRepo   giftRepo.GiftsData
 	EmployeeId int
 }
@@ -25,8 +23,7 @@ func (c *AssignGiftToEmployeeCommand) Execute() {
 	if err != nil {
 		errors.New("Employee not found.")
 	}
-	c.mu.Lock()
-	defer c.mu.Unlock()
+
 	c.giftRepo.LoadGifts() // how we could prevent this call?
 
 	foundGift, err := c.giftRepo.FindOneByCategories(employee.Interests)
