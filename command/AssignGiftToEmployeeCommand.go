@@ -3,26 +3,27 @@ package command
 import (
 	"errors"
 	"fmt"
-	"giftem/entity"
 	"giftem/repo/employeeRepo"
 	"giftem/repo/giftRepo"
 	"sync"
+	"time"
 )
 
 type AssignGiftToEmployeeCommand struct {
-	mu       sync.Mutex
-	giftRepo giftRepo.GiftsData
+	mu         sync.Mutex
+	giftRepo   giftRepo.GiftsData
+	EmployeeId int
 }
 
-func NewAssignGiftToEmployeeCommand() *AssignGiftToEmployeeCommand {
-	return &AssignGiftToEmployeeCommand{}
+func NewAssignGiftToEmployeeCommand(employeeId int) *AssignGiftToEmployeeCommand {
+	return &AssignGiftToEmployeeCommand{EmployeeId: employeeId}
 }
 
-func (c *AssignGiftToEmployeeCommand) Execute(employeeId int) (entity.Gift, error) {
+func (c *AssignGiftToEmployeeCommand) Execute() {
 	fmt.Println("Executing...")
-	employee, err := employeeRepo.FindById(employeeId)
+	employee, err := employeeRepo.FindById(c.EmployeeId)
 	if err != nil {
-		return entity.Gift{}, errors.New("Employee not found.")
+		errors.New("Employee not found.")
 	}
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -32,10 +33,8 @@ func (c *AssignGiftToEmployeeCommand) Execute(employeeId int) (entity.Gift, erro
 	if err != nil {
 		foundGift = c.giftRepo.FindLast()
 	}
-
+	time.Sleep(5 * time.Second)
 	fmt.Println(foundGift)
 	c.giftRepo.TakeGift(foundGift.Name)
 	c.giftRepo.PersistData()
-
-	return foundGift, nil
 }

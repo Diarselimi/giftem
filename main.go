@@ -2,29 +2,26 @@ package main
 
 import (
 	"fmt"
+	"giftem/application"
 	"giftem/command"
 	"log"
 	"net/http"
 	"strconv"
+	"sync"
 )
 
-func handler(w http.ResponseWriter, r *http.Request) {
+var mutex = sync.Mutex{}
 
+func handler(w http.ResponseWriter, r *http.Request) {
 	employeeId, err := strconv.Atoi(r.URL.Path[1:])
 	if err != nil {
 		fmt.Fprintf(w, "Employee with id %s not found", r.URL.Path[1:])
 		return
 	}
-	cmd := command.NewAssignGiftToEmployeeCommand()
-	go cmd.Execute(employeeId)
-	go cmd.Execute(employeeId)
-	go cmd.Execute(employeeId)
+	mediator := application.CommandMediator{Mu: &mutex}
+	mediator.Add(command.NewAssignGiftToEmployeeCommand(employeeId))
 
-	gift, err := cmd.Execute(employeeId)
-	if err != nil {
-		fmt.Fprintf(w, "We could not find a gift for you.")
-	}
-	fmt.Fprintf(w, "We have found a gift for you,<h1> %s </h1>", gift.Name)
+	mediator.Run()
 }
 
 func main() {
