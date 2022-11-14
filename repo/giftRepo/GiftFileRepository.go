@@ -6,17 +6,13 @@ import (
 	"fmt"
 	"giftem/entity"
 	"os"
-	"sync"
 )
 
 type GiftsData struct {
-	mu    sync.Mutex
 	gifts []entity.Gift
 }
 
 func (gd *GiftsData) FindOneByCategories(categories []string) (entity.Gift, error) {
-	gd.mu.Lock()
-	defer gd.mu.Unlock()
 
 	for _, gift := range gd.gifts {
 		if gift.IsGifted == false && gift.HasCategories(categories) == true {
@@ -27,8 +23,7 @@ func (gd *GiftsData) FindOneByCategories(categories []string) (entity.Gift, erro
 }
 
 func (gd *GiftsData) FindLast() entity.Gift {
-	gd.mu.Lock()
-	defer gd.mu.Unlock()
+
 	for _, gift := range gd.gifts {
 		if gift.IsGifted == false {
 			return gift
@@ -38,8 +33,7 @@ func (gd *GiftsData) FindLast() entity.Gift {
 }
 
 func (gd *GiftsData) TakeGift(giftName string) {
-	gd.mu.Lock()
-	defer gd.mu.Unlock()
+
 	for key, gift := range gd.gifts {
 		if gift.Name == giftName {
 			gd.gifts[key].IsGifted = true
@@ -50,6 +44,7 @@ func (gd *GiftsData) TakeGift(giftName string) {
 }
 
 func (gd *GiftsData) PersistData() {
+
 	jsonData, err := json.Marshal(gd.gifts)
 	if err != nil {
 		fmt.Println("Error while saving")

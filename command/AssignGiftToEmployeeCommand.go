@@ -2,12 +2,15 @@ package command
 
 import (
 	"errors"
+	"fmt"
 	"giftem/entity"
 	"giftem/repo/employeeRepo"
 	"giftem/repo/giftRepo"
+	"sync"
 )
 
 type AssignGiftToEmployeeCommand struct {
+	mu       sync.Mutex
 	giftRepo giftRepo.GiftsData
 }
 
@@ -16,10 +19,13 @@ func NewAssignGiftToEmployeeCommand() *AssignGiftToEmployeeCommand {
 }
 
 func (c *AssignGiftToEmployeeCommand) Execute(employeeId int) (entity.Gift, error) {
+	fmt.Println("Executing...")
 	employee, err := employeeRepo.FindById(employeeId)
 	if err != nil {
-		errors.New("Employee not found.")
+		return entity.Gift{}, errors.New("Employee not found.")
 	}
+	c.mu.Lock()
+	defer c.mu.Unlock()
 	c.giftRepo.LoadGifts() // how we could prevent this call?
 
 	foundGift, err := c.giftRepo.FindOneByCategories(employee.Interests)
@@ -27,6 +33,7 @@ func (c *AssignGiftToEmployeeCommand) Execute(employeeId int) (entity.Gift, erro
 		foundGift = c.giftRepo.FindLast()
 	}
 
+	fmt.Println(foundGift)
 	c.giftRepo.TakeGift(foundGift.Name)
 	c.giftRepo.PersistData()
 

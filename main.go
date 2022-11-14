@@ -16,6 +16,10 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	cmd := command.NewAssignGiftToEmployeeCommand()
+	go cmd.Execute(employeeId)
+	go cmd.Execute(employeeId)
+	go cmd.Execute(employeeId)
+
 	gift, err := cmd.Execute(employeeId)
 	if err != nil {
 		fmt.Fprintf(w, "We could not find a gift for you.")
