@@ -21,7 +21,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	mediator := application.CommandMediator{Mu: &mutex}
 	mediator.Add(command.NewAssignGiftToEmployeeCommand(employeeId))
 
-	mediator.Run()
+	mediator.Run(&w)
 }
 
 func main() {

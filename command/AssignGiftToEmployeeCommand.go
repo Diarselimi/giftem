@@ -3,6 +3,7 @@ package command
 import (
 	"errors"
 	"fmt"
+	"giftem/entity"
 	"giftem/repo/employeeRepo"
 	"giftem/repo/giftRepo"
 	"time"
@@ -17,7 +18,7 @@ func NewAssignGiftToEmployeeCommand(employeeId int) *AssignGiftToEmployeeCommand
 	return &AssignGiftToEmployeeCommand{EmployeeId: employeeId}
 }
 
-func (c *AssignGiftToEmployeeCommand) Execute() {
+func (c *AssignGiftToEmployeeCommand) Execute() entity.Gift {
 	fmt.Println("Executing...")
 	employee, err := employeeRepo.FindById(c.EmployeeId)
 	if err != nil {
@@ -34,4 +35,6 @@ func (c *AssignGiftToEmployeeCommand) Execute() {
 	fmt.Println(foundGift)
 	c.giftRepo.TakeGift(foundGift.Name)
 	c.giftRepo.PersistData()
+
+	return foundGift
 }

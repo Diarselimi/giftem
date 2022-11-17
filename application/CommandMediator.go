@@ -1,9 +1,14 @@
 package application
 
-import "sync"
+import (
+	"fmt"
+	"giftem/entity"
+	"net/http"
+	"sync"
+)
 
 type Command interface {
-	Execute()
+	Execute() entity.Gift
 }
 
 type CommandMediator struct {
@@ -15,11 +20,12 @@ func (cm *CommandMediator) Add(cmd Command) {
 	cm.commands = append(cm.commands, cmd)
 }
 
-func (cm *CommandMediator) Run() {
+func (cm *CommandMediator) Run(w *http.ResponseWriter) {
 	cm.Mu.Lock()
 	defer cm.Mu.Unlock()
 
 	for _, command := range cm.commands {
-		command.Execute()
+		gf := command.Execute()
+		fmt.Fprintf(*w, "<h1> Your gift is, %s </h1>", gf.Name)
 	}
 }
